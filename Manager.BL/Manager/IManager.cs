@@ -9,10 +9,10 @@ namespace Manager.BL.Manager
 {
     public interface IManager
     {
-        Task<IEnumerable<UserReadDto>> GetAll();
-        Task<UserReadDto>? GetById(Guid id);
-        Task<UserReadDto> Add(StudentAddDTO student);
-        bool Update(StudentUpdateDto student);
+        IEnumerable<UserReadDto> GetAll();
+        Task<UserReadDto> GetById(int id);
+        Task<UserReadDto> Add(UserRegisterDto student);
+        bool Update(UserRegisterDto student);
         void DeleteById(Guid id);
     }
 }

@@ -45,7 +45,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
 });
 
-builder.Services.AddScoped<IValidator<UserReadDto>, UserRegisterValidator>();
+builder.Services.AddScoped<IValidator<UserRegisterDto>, UserRegisterValidator>();
 
 var app = builder.Build();
 

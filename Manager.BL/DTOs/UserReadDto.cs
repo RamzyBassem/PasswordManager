@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,6 @@ namespace Manager.BL.DTOs
 
         public string Role { get; set; }
 
+        public IEnumerable<IdentityError> ErrorMessage { get; set; }
     }
 }
