@@ -1,5 +1,7 @@
 using FluentValidation;
+using Manager.BL.AutoMapper;
 using Manager.BL.DTOs;
+using Manager.BL.Manager;
 using Manager.BL.Validator;
 using Manager.DAL.Data.Context;
 using Manager.DAL.Data.Models;
@@ -46,7 +48,8 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddScoped<IValidator<UserRegisterDto>, UserRegisterValidator>();
-
+builder.Services.AddScoped<IManager,Managerr >();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

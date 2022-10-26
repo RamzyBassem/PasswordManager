@@ -9,13 +9,13 @@ namespace Manager.BL.DTOs
 {
     public class UserReadDto
     {
-        public string UserName { get; set; } 
-        public string Firstname { get; set; }
-        public string LastName { get; set; }    
-        public string PhoneNumber { get; set; }
+        public string UserName { get; set; }
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
+        public string PhoneNumber { get; set; } = "";
 
         public string Role { get; set; }
 
-        public IEnumerable<IdentityError> ErrorMessage { get; set; }
+        public IEnumerable<IdentityError> ErrorMessage { get; set; }=new List<IdentityError>();
     }
 }

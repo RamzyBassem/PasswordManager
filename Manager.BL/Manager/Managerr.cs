@@ -3,9 +3,11 @@ using Manager.BL.DTOs;
 using Manager.DAL.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -13,12 +15,12 @@ using System.Threading.Tasks;
 
 namespace Manager.BL.Manager
 {
-    public class Manager : IManager
+    public class Managerr : IManager
     {
         private readonly UserManager<Employee> _userManager;
         private readonly IConfiguration _configuration;
         private IMapper _mapper;
-        public Manager(
+        public Managerr(
             UserManager<Employee> userManager,
             IConfiguration configuration,
              IMapper mapper)
@@ -46,7 +48,28 @@ namespace Manager.BL.Manager
 
             };
             var claimResult = await _userManager.AddClaimsAsync(newEmp, claims);
-            return _mapper.Map<UserReadDto>(newEmp);
+            var User = _mapper.Map<UserReadDto>(newEmp);
+            User.Role = emp.Role;
+            return User;
+        }
+
+        public async Task<string> CheckLogin(UserLoginDto empLogin)
+        {
+            var user = await _userManager.FindByNameAsync(empLogin.UserName);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, empLogin.Password))
+            {
+                return "UnAuthorized";
+            }
+            var claims = await _userManager.GetClaimsAsync(user);
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+            var token = new JwtSecurityToken(
+
+                expires: DateTime.Now.AddHours(3),
+                claims: claims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                );
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public void DeleteById(Guid id)

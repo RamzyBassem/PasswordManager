@@ -13,6 +13,7 @@ namespace Manager.BL.Manager
         Task<UserReadDto> GetById(int id);
         Task<UserReadDto> Add(UserRegisterDto student);
         bool Update(UserRegisterDto student);
+        Task<string> CheckLogin(UserLoginDto student);
         void DeleteById(Guid id);
     }
 }

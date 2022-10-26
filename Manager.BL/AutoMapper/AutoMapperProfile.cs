@@ -15,7 +15,7 @@ namespace Manager.BL.AutoMapper
         {
             CreateMap<Employee, UserReadDto>();
             CreateMap<UserRegisterDto, Employee>();
-
+            CreateMap<UserLoginDto, Employee>();
 
         }
     }
