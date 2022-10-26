@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using static Slapper.AutoMapper;
 
 namespace Manager.BL.Manager
 {
@@ -31,6 +33,7 @@ namespace Manager.BL.Manager
             _mapper = mapper;
 
         }
+        // Register New User
         public async Task<UserReadDto> Add(UserRegisterDto emp)
         {
             var newEmp = _mapper.Map<Employee>(emp);
@@ -52,7 +55,7 @@ namespace Manager.BL.Manager
             User.Role = emp.Role;
             return User;
         }
-
+        // Check If User Exists
         public async Task<string> CheckLogin(UserLoginDto empLogin)
         {
             var user = await _userManager.FindByNameAsync(empLogin.UserName);
@@ -71,29 +74,58 @@ namespace Manager.BL.Manager
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-        public void DeleteById(Guid id)
+        // Delete  a user By ID
+        public async Task<bool> DeleteById(string id)
         {
-            throw new NotImplementedException();
-        }
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return false;
+          await _userManager.DeleteAsync(user);
+            return true;
 
+        }
+        // Get ALl Users
         public  IEnumerable<UserReadDto> GetAll()
         {
-            var user =  _userManager.Users.ToList();
+            var users =  _userManager.Users.ToList();
+            List<UserReadDto> userReadDtos= new List<UserReadDto>();
+            var dto = new UserReadDto();
+            foreach (var user in users)
+            {
+                dto= _mapper.Map<UserReadDto>(user);
+                dto.Role = _userManager.GetClaimsAsync(user).Result[1].Value;
+                userReadDtos.Add(dto);
+            }
 
-            return _mapper.Map<IEnumerable<UserReadDto>>(user);
+            return userReadDtos;
         }
-
-        public async Task<UserReadDto>? GetById(int id)
+        // Get user By Id
+        public async Task<UserReadDto>? GetById(string id)
         {
            
-            var user = await _userManager.FindByIdAsync(id.ToString());
+            var user = await _userManager.FindByIdAsync(id);
+            
             return _mapper.Map<UserReadDto>(user);
         }
-
-        public bool Update(UserRegisterDto student)
+        // Get Current Logged In User
+        public async Task<Employee> GetCurrentUser(ClaimsPrincipal User)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.GetUserAsync(User);
+            return (user);
+        }
+        // Update User
+        public async Task<bool> Update(UserUpdateDto student)
+        {
+            var user = await _userManager.FindByIdAsync(student.Id);
+            if (user == null)
+                return false;
+            _mapper.Map<UserUpdateDto, Employee>(student, user);
+            var claimNew = new Claim(ClaimTypes.Role, student.Role);
+            var claimOld = _userManager.GetClaimsAsync(user).Result[1];
+             await _userManager.ReplaceClaimAsync(user, claimOld, claimNew);
+             await _userManager.UpdateAsync(user);
+            
+            return true;
         }
     }
 }

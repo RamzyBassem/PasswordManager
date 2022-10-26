@@ -16,6 +16,7 @@ namespace Manager.BL.AutoMapper
             CreateMap<Employee, UserReadDto>();
             CreateMap<UserRegisterDto, Employee>();
             CreateMap<UserLoginDto, Employee>();
+            CreateMap<UserUpdateDto, Employee>().ForSourceMember(x => x.Id, y => y.DoNotValidate());
 
         }
     }

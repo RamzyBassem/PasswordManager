@@ -46,5 +46,43 @@ namespace PasswordManagerServer.Controllers
         {
             return Ok(manager.GetAll());
         }
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<ActionResult> GetById(string id)
+        {
+        
+            var currentUser = await manager.GetCurrentUser(User);
+            if (currentUser.Id != id)
+            {
+                return Unauthorized(new { Message = "You Cannot see Others Data" });
+            }
+            var user = await manager.GetById(id);
+            return Ok(user);
+        }
+        [HttpPut("{id}")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult> Update(UserUpdateDto user,string id)
+        {
+            if(user.Id!=id)
+            {
+                return BadRequest();
+            }           
+            var userUpdated = await manager.Update(user);
+            if (!userUpdated)
+                return NotFound();
+            else
+                return Ok();
+        }
+        [HttpDelete("{id}")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult> Delete( string id)
+        {
+       
+            var userUpdated = await manager.DeleteById(id);
+            if (!userUpdated)
+                return NotFound();
+            else
+                return Ok();
+        }
     }
 }
