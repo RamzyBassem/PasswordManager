@@ -1,57 +1,70 @@
 ﻿@page "/fetchdata"
 @inject HttpClient Http
-
-<PageTitle>Weather forecast</PageTitle>
-
-<h1>Weather forecast</h1>
-
-<p>This component demonstrates fetching data from the server.</p>
-
-@if (forecasts == null)
+@inject NavigationManager NavigationManager;
+@inherits UserBase
+<PageTitle>Users </PageTitle>
+@if (employees == null && ErrorMessage==null)
 {
     <p><em>Loading...</em></p>
+
+}
+else if(ErrorMessage!=null){
+    <h3>@ErrorMessage</h3>
+      NavigationManager.NavigateTo("/");
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
+  
+      //  NavigationManager.NavigateTo("/");
+    
+    @if (employees.Count() == 0)
+    {
+        <h1>No Users to show</h1>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    <th>UserName</th>
+                    <th>FirstName</th>
+                    <th>LastName</th>
+                    <th>PhoneNumber</th>
+                    <th>role</th>
+
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+
+
+                @foreach (var emp in employees)
+                {
+                    <tr>
+                       
+                        <td>@emp.UserName</td>
+                        <td>@emp.FirstName</td>
+                        <td>@emp.LastName</td>
+                        <td>@emp.PhoneNumber</td>
+                        <td>@emp.role</td>
+                       @* <td>
+                            <button @onclick="() => delete(emp.id)" class="btn btn-danger">
+                                delete
+                            </button>
+                            <a href="/editcar/@car.id">edit</a>
+
+                        </td>*@
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
-
-    protected override async Task OnInitializedAsync()
-    {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
-    }
-
-    public class WeatherForecast
-    {
-        public DateTime Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string? Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
+    //void Delete(int id){
+    //    User.DeleteCar(id);
+    //    Console.WriteLine("Deleted");
+    //    NavigationManager.NavigateTo("fetchdata", true);
+    //}
 }
