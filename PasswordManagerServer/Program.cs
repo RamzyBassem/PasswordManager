@@ -12,14 +12,12 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Security.Claims;
 using System.Text;
-
 var builder = WebApplication.CreateBuilder(args);
 string allowAllPolicy = "AllowAll";
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>

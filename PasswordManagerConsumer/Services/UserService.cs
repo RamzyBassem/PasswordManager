@@ -4,6 +4,9 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore;
+using PasswordManagerConsumer.Dtos;
+using System.Text.Json;
+using System.Text;
 
 namespace PasswordManagerConsumer.Services
 {
@@ -55,6 +58,23 @@ namespace PasswordManagerConsumer.Services
             {
                 Console.WriteLine(e.Message);
                 throw;
+            }
+        }
+        public async Task<string> CheckLogin(UserLoginDto user)
+        {
+            using var response = await client.PostAsJsonAsync("api/Manager/Login", user);
+            if (!response.IsSuccessStatusCode)
+            {
+                // set error message for display, log to console and return
+
+                Console.WriteLine($"There was an error! ");
+                return null;
+            }
+            else
+            {
+                // convert response data to Article object
+                var data = await response.Content.ReadFromJsonAsync<JsonElement>();
+                return data.GetProperty("token").GetString();
             }
         }
     }

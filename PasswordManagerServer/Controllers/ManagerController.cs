@@ -26,10 +26,11 @@ namespace PasswordManagerServer.Controllers
             {
                 return Unauthorized();
             }
-            return Ok(check);
+            return Ok(new { token = check });
         }
         [HttpPost]
         [Route("Register")]
+        [Authorize(Policy = "Admin")]
         public async Task<ActionResult> Register(UserRegisterDto register)
         {
             var user = await manager.Add(register);
