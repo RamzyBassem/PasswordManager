@@ -7,6 +7,10 @@ using Microsoft.AspNetCore;
 using PasswordManagerConsumer.Dtos;
 using System.Text.Json;
 using System.Text;
+using System.Reflection.Metadata;
+using Blazored.LocalStorage;
+using System.Windows.Markup;
+using Manager.BL.DTOs;
 
 namespace PasswordManagerConsumer.Services
 {
@@ -15,26 +19,27 @@ namespace PasswordManagerConsumer.Services
         private readonly HttpClient client;
         [Inject]
         public NavigationManager NavigationManager { get; set; }
-        public UserService(HttpClient client)
+        public ILocalStorageService localStore { get; set; }
+        public UserService(HttpClient client, ILocalStorageService localStore)
         {
             this.client = client;
+            this.localStore = localStore;
         }
         public async Task<IEnumerable<Employee>> GetUsers()
         {
-            
+            var token =  await localStore.GetItemAsync<string>("token");
+            Console.WriteLine($"Token value = {token}");
             try
             {
-                //  client.DefaultRequestHeaders.Authorization
-                //     = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImVkZDZlOTM4LTk4MDItNDhkOS04ZTgyLTliOGZlYjU5N2E3NCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNjY2ODEyMzg3fQ.uLxcLCF84oG0uXS5qMgoW8352IwUy-hWz_ul9-82Nwg");
-                // var emp = await this.client.GetFromJsonAsync<IEnumerable<Employee>>("api/Manager");
+               
 
                 var request = new HttpRequestMessage(HttpMethod.Get, "api/Manager");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImVkZDZlOTM4LTk4MDItNDhkOS04ZTgyLTliOGZlYjU5N2E3NCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNjY2ODEyMzg3fQ.uLxcLCF84oG0uXS5qMgoW8352IwUy-hWz_ul9-82Nwg");
+           
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 using var httpResponse = await client.SendAsync(request);
 
 
 
-                //  using var httpResponse = await client.GetAsync("api/Manager");
                 if(httpResponse.StatusCode== System.Net.HttpStatusCode.Unauthorized)
                 {
                     throw new Exception("You are Not Authorized");
@@ -75,6 +80,30 @@ namespace PasswordManagerConsumer.Services
                 // convert response data to Article object
                 var data = await response.Content.ReadFromJsonAsync<JsonElement>();
                 return data.GetProperty("token").GetString();
+            }
+        }
+        public async Task<string> Register(UserRegisterDto user)
+        {
+            var token = await localStore.GetItemAsync<string>("token");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "api/Manager/Register");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Content = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
+            using var response = await client.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                
+                Console.WriteLine($"There was an error! {response.ReasonPhrase}");
+                var cont = await response.Content.ReadFromJsonAsync<UserReadDto>();
+                if (cont.UserNameExists)
+                {
+                    return "User Name Exists";
+                }
+                return response.ReasonPhrase;
+            }
+            else
+            {
+                return "Ok";
             }
         }
     }

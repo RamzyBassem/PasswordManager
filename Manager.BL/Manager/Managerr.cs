@@ -37,23 +37,31 @@ namespace Manager.BL.Manager
         public async Task<UserReadDto> Add(UserRegisterDto emp)
         {
             var newEmp = _mapper.Map<Employee>(emp);
-            var createdEmp = await _userManager.CreateAsync(newEmp,emp.Password);
-            if (!createdEmp.Succeeded)
-            {
-                UserReadDto userReadDto = new UserReadDto { ErrorMessage = createdEmp.Errors };
-                return userReadDto;
-            }
-                
-            var claims = new List<Claim>
+            var user = await _userManager.FindByNameAsync(newEmp.UserName);
+
+            
+                var createdEmp = await _userManager.CreateAsync(newEmp, emp.Password);
+                if (!createdEmp.Succeeded)
+                {
+                    UserReadDto userReadDto = new UserReadDto { ErrorMessage = createdEmp.Errors };
+                    if (user != null)
+                    {
+                        userReadDto.UserNameExists = true;
+                    }
+                    return userReadDto;
+                }
+
+                var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier,newEmp.Id),
                 new Claim(ClaimTypes.Role,emp.Role)
 
             };
-            var claimResult = await _userManager.AddClaimsAsync(newEmp, claims);
-            var User = _mapper.Map<UserReadDto>(newEmp);
-            User.Role = emp.Role;
-            return User;
+                var claimResult = await _userManager.AddClaimsAsync(newEmp, claims);
+                var User = _mapper.Map<UserReadDto>(newEmp);
+                User.Role = emp.Role;
+                return User;
+            
         }
         // Check If User Exists
         public async Task<string> CheckLogin(UserLoginDto empLogin)

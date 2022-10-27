@@ -36,7 +36,11 @@ namespace PasswordManagerServer.Controllers
             var user = await manager.Add(register);
             if (user.ErrorMessage.Count() > 0)
             {
-                return BadRequest(user.ErrorMessage);
+                return BadRequest(new
+                {
+                    ErrorMessage = user.ErrorMessage,
+                    UserNameExists = user.UserNameExists
+                });
             }
             return Ok(user);
         }
