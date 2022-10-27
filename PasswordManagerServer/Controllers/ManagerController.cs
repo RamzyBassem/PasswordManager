@@ -13,14 +13,18 @@ namespace PasswordManagerServer.Controllers
     public class ManagerController : ControllerBase
     {
         private IManager manager;
-        public ManagerController(IManager manager)
+        private ILogger<ManagerController> _logger;
+
+        public ManagerController(IManager manager, ILogger<ManagerController> logger)
         {
             this.manager = manager;
+            _logger = logger;
         }
         [HttpPost]
         [Route("Login")]
         public async Task<ActionResult> Login(UserLoginDto login)
         {
+            _logger.LogInformation("Checking Login");
             var check = await manager.CheckLogin(login);
             if (check == "UnAuthorized")
             {
@@ -33,6 +37,8 @@ namespace PasswordManagerServer.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult> Register(UserRegisterDto register)
         {
+            _logger.LogInformation("Adding new User");
+
             var user = await manager.Add(register);
             if (user.ErrorMessage.Count() > 0)
             {
@@ -49,14 +55,17 @@ namespace PasswordManagerServer.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult> GetAll()
         {
+            _logger.LogInformation("Getting all  Users");
+
             return Ok(manager.GetAll());
         }
         [HttpGet("{id}")]
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult> GetById(string id)
         {
-        
-          
+
+            _logger.LogInformation("Getting user by id");
+
             var user = await manager.GetById(id);
             if (user == null)
                 return BadRequest();
@@ -66,6 +75,8 @@ namespace PasswordManagerServer.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult> Update(UserUpdateDto user,string id)
         {
+            _logger.LogInformation("Edditing user");
+
             Console.WriteLine(user.UserName);
             if(user.Id!=id)
             {
@@ -81,7 +92,8 @@ namespace PasswordManagerServer.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult> Delete( string id)
         {
-       
+            _logger.LogInformation("Deleting user");
+
             var userUpdated = await manager.DeleteById(id);
             if (!userUpdated)
                 return NotFound();

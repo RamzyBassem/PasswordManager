@@ -8,12 +8,15 @@ using Manager.DAL.Data.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Serilog.Core;
+using Serilog;
 using System;
 using System.Security.Claims;
 using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
-string allowAllPolicy = "AllowAll";
 
 // Add services to the container.
 
@@ -61,6 +64,12 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<IValidator<UserRegisterDto>, UserRegisterValidator>();
 builder.Services.AddScoped<IManager,Managerr >();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
+var logger = new LoggerConfiguration()
+  .ReadFrom.Configuration(builder.Configuration)
+  .Enrich.FromLogContext()
+  .CreateLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -70,7 +79,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors();
-
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
