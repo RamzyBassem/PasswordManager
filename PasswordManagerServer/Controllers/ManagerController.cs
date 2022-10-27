@@ -52,22 +52,21 @@ namespace PasswordManagerServer.Controllers
             return Ok(manager.GetAll());
         }
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(Policy = "Admin")]
         public async Task<ActionResult> GetById(string id)
         {
         
-            var currentUser = await manager.GetCurrentUser(User);
-            if (currentUser.Id != id)
-            {
-                return Unauthorized(new { Message = "You Cannot see Others Data" });
-            }
+          
             var user = await manager.GetById(id);
+            if (user == null)
+                return BadRequest();
             return Ok(user);
         }
-        [HttpPut("{id}")]
+        [HttpPut("Edit/{id}")]
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult> Update(UserUpdateDto user,string id)
         {
+            Console.WriteLine(user.UserName);
             if(user.Id!=id)
             {
                 return BadRequest();

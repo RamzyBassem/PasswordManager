@@ -15,7 +15,6 @@ else if(ErrorMessage!=null){
 else
 {
   
-      //  NavigationManager.NavigateTo("/");
     
     @if (employees.Count() == 0)
     {
@@ -26,12 +25,12 @@ else
         <table class="table">
             <thead>
                 <tr>
-                    <th>UserName</th>
-                    <th>FirstName</th>
-                    <th>LastName</th>
-                    <th>PhoneNumber</th>
-                    <th>role</th>
-
+                    <th>User Name</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Phone Number</th>
+                    <th>Role</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -46,13 +45,13 @@ else
                         <td>@emp.LastName</td>
                         <td>@emp.PhoneNumber</td>
                         <td>@emp.role</td>
-                       @* <td>
-                            <button @onclick="() => delete(emp.id)" class="btn btn-danger">
+                        <td>
+                            @*<button @onclick="() => delete(emp.id)" class="btn btn-danger">
                                 delete
-                            </button>
-                            <a href="/editcar/@car.id">edit</a>
+                            </button>*@
+                            <a href="/edit/@emp.Id">Edit</a>
 
-                        </td>*@
+                        </td>
                     </tr>
                 }
 

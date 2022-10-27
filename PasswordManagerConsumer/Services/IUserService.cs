@@ -8,5 +8,7 @@ namespace PasswordManagerConsumer.Services
         Task<IEnumerable<Employee>> GetUsers();
         Task<string> CheckLogin(UserLoginDto user);
         Task<string> Register(UserRegisterDto user);
+        Task<Employee> GetUserById(string id);
+        Task<string> EditUser(Employee emp);
     }
 }
