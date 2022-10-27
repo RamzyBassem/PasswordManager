@@ -1,6 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject Blazored.LocalStorage.ILocalStorageService localStore
+@inject NavigationManager NavigationManager;
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">PasswordManagerConsumer</a>
+        <a class="navbar-brand" href="">Password Manager</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -8,26 +10,51 @@
 </div>
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+   
     <nav class="flex-column">
+        @if (x)
+        {
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
+ 
+        @if(isAdm){
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+                <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> View Users
             </NavLink>
         </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="register">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Add Account
+                </NavLink>
+            </div>
+        }
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            <NavLink class="nav-link" onclick="@removeToken">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> LogOut
             </NavLink>
         </div>
+        }
+        else{
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="login">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Login
+            </NavLink>
+        </div>
+        }
     </nav>
 </div>
 
 @code {
+    bool x;
+    bool isAdm;
+    protected override async Task OnInitializedAsync(){
+        x = await tokenExists();
+        isAdm = await isAdmin();
+    }
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -36,4 +63,20 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+    private async Task<bool> tokenExists(){
+        return  await localStore.ContainKeyAsync("token");
+    }
+    public async void removeToken(){
+        await localStore.ClearAsync();
+        NavigationManager.NavigateTo("/login", forceLoad: true);
+    }
+    private async Task<bool> isAdmin()
+    {
+        var role = await localStore.GetItemAsync<string>("role");
+        if (role == "Admin")
+            return true;
+        else
+            return false;
+    }
+  
 }

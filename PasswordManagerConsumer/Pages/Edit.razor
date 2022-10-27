@@ -1,0 +1,54 @@
+﻿@page "/edit/{id}"
+@inherits EditBase
+@inject NavigationManager NavigationManager;
+@inject Blazored.LocalStorage.ILocalStorageService localStore
+
+<h3>Edit</h3>
+
+@if(employee==null || !IsAuthorized){
+    <span class="alert alert-danger">You Are Un Authorized</span>
+}
+else{
+    <EditForm Model="@employee" OnValidSubmit="EditUser">
+
+        <FluentValidationValidator />
+        <ValidationSummary />
+    <div class="form-group">
+        <label for="username">First Name</label>
+        <InputText @bind-Value="employee.FirstName" class="form-control"></InputText>
+            <ValidationMessage For="@(()=>employee.FirstName)"></ValidationMessage>
+    </div>
+    <div class="form-group">
+        <label for="username">Last name</label>
+        <InputText @bind-Value="employee.LastName" class="form-control"></InputText>
+            <ValidationMessage For="@(()=>employee.LastName)"></ValidationMessage>
+    </div>
+    <div class="form-group">
+        <label for="username">Phone Number</label>
+        <InputText @bind-Value="employee.PhoneNumber" class="form-control"></InputText>
+            <ValidationMessage For="@(()=>employee.PhoneNumber)"></ValidationMessage>
+
+    </div>
+     <div class="form-group">
+        <label for="username">Role</label>
+            <InputRadioGroup @bind-Value="employee.role">
+            <div class="form-check form-check-inline">
+                    <InputRadio Value="Admin"  class="form-check-input" ></InputRadio>
+                <label>Admin</label>
+            </div>
+            <div class="form-check form-check-inline">
+                    <InputRadio Value="User" class="form-check-input" ></InputRadio>
+                <label>User</label>
+            </div>
+            </InputRadioGroup>
+        </div>
+        <button type="submit" class="btn btn-primary">Edit</button>
+</EditForm>
+
+}
+@code {
+ 
+    string Admin = "Admin";
+    string User = "User";
+   
+}

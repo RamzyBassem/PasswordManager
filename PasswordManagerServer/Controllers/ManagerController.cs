@@ -13,29 +13,40 @@ namespace PasswordManagerServer.Controllers
     public class ManagerController : ControllerBase
     {
         private IManager manager;
-        public ManagerController(IManager manager)
+        private ILogger<ManagerController> _logger;
+
+        public ManagerController(IManager manager, ILogger<ManagerController> logger)
         {
             this.manager = manager;
+            _logger = logger;
         }
         [HttpPost]
         [Route("Login")]
         public async Task<ActionResult> Login(UserLoginDto login)
         {
+            _logger.LogInformation("Checking Login");
             var check = await manager.CheckLogin(login);
             if (check == "UnAuthorized")
             {
                 return Unauthorized();
             }
-            return Ok(check);
+            return Ok(new { token = check });
         }
         [HttpPost]
         [Route("Register")]
+        [Authorize(Policy = "Admin")]
         public async Task<ActionResult> Register(UserRegisterDto register)
         {
+            _logger.LogInformation("Adding new User");
+
             var user = await manager.Add(register);
             if (user.ErrorMessage.Count() > 0)
             {
-                return BadRequest(user.ErrorMessage);
+                return BadRequest(new
+                {
+                    ErrorMessage = user.ErrorMessage,
+                    UserNameExists = user.UserNameExists
+                });
             }
             return Ok(user);
         }
@@ -44,25 +55,29 @@ namespace PasswordManagerServer.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult> GetAll()
         {
+            _logger.LogInformation("Getting all  Users");
+
             return Ok(manager.GetAll());
         }
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(Policy = "Admin")]
         public async Task<ActionResult> GetById(string id)
         {
-        
-            var currentUser = await manager.GetCurrentUser(User);
-            if (currentUser.Id != id)
-            {
-                return Unauthorized(new { Message = "You Cannot see Others Data" });
-            }
+
+            _logger.LogInformation("Getting user by id");
+
             var user = await manager.GetById(id);
+            if (user == null)
+                return BadRequest();
             return Ok(user);
         }
-        [HttpPut("{id}")]
+        [HttpPut("Edit/{id}")]
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult> Update(UserUpdateDto user,string id)
         {
+            _logger.LogInformation("Edditing user");
+
+            Console.WriteLine(user.UserName);
             if(user.Id!=id)
             {
                 return BadRequest();
@@ -77,7 +92,8 @@ namespace PasswordManagerServer.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult> Delete( string id)
         {
-       
+            _logger.LogInformation("Deleting user");
+
             var userUpdated = await manager.DeleteById(id);
             if (!userUpdated)
                 return NotFound();
