@@ -1,24 +1,39 @@
 ﻿@page "/register"
 @inherits RegisterBase
 
-<h3>Register</h3>
-<EditForm Model="@userRegisterDto" OnSubmit="RegisterUser">
+<h3>Add New Account</h3>
+@if (  !IsAuthorized)
+{
+    //NavigationManager.NavigateTo("/Unauthorized");
+    <span class="alert alert-danger">You Are Un Authorized</span>
+
+}
+<EditForm Model="@userRegisterDto" OnValidSubmit="RegisterUser" >
+    <FluentValidationValidator/>
+    <ValidationSummary/>    
     <div class="form-group">
         <label for="username">User Name</label>
         <InputText @bind-Value="userRegisterDto.UserName" class="form-control"></InputText>
         <span class="text text-danger">@Message</span>
+        <ValidationMessage For="@(()=>userRegisterDto.UserName)"></ValidationMessage>
     </div>
       <div class="form-group">
         <label for="username">First Name</label>
         <InputText @bind-Value="userRegisterDto.Firstname" class="form-control"></InputText>
+        <ValidationMessage For="@(()=>userRegisterDto.Firstname)"></ValidationMessage>
+
     </div>
     <div class="form-group">
         <label for="username">Last name</label>
         <InputText @bind-Value="userRegisterDto.LastName" class="form-control"></InputText>
+        <ValidationMessage For="@(()=>userRegisterDto.LastName)"></ValidationMessage>
+
     </div>
     <div class="form-group">
         <label for="username">Phone Number</label>
         <InputText @bind-Value="userRegisterDto.PhoneNumber" class="form-control"></InputText>
+                <ValidationMessage For="@(()=>userRegisterDto.PhoneNumber)"></ValidationMessage>
+
     </div>
       <div class="form-group">
         <label for="username">Role</label>
@@ -37,12 +52,16 @@
     <div class="form-group">
         <label for="password">Password</label>
         <InputText @bind-Value="userRegisterDto.Password" type="password" class="form-control"></InputText>
+        <ValidationMessage For="@(()=>userRegisterDto.Password)"></ValidationMessage>
+
     </div>
     <div class="form-group">
         <label for="password">Confirm Password</label>
         <InputText @bind-Value="userRegisterDto.ConfirmPassword" type="password" class="form-control"></InputText>
+        <ValidationMessage For="@(()=>userRegisterDto.ConfirmPassword)"></ValidationMessage>
+
     </div>
-    <button type="submit" class="btn btn-primary">Login</button>
+    <button type="submit" class="btn btn-primary">Add</button>
 </EditForm>
 @code {
     string admin = "Admin";

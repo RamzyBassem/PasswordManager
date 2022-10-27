@@ -10,6 +10,8 @@ namespace PasswordManagerConsumer.Pages
         public IUserService UserService { get; set; }
         public IEnumerable<Employee> employees { get; set; }
         public string ErrorMessage { get; set; }
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
         protected override async Task OnInitializedAsync()
         {
             try
@@ -21,6 +23,17 @@ namespace PasswordManagerConsumer.Pages
                 ErrorMessage = ex.Message;
             }
         }
-     
+        public async Task DeleteUser(string id)
+        {
+            var result =await UserService.DeleteById(id);
+            if (result == "Ok")
+            {
+                NavigationManager.NavigateTo("/fetchdata", true);
+
+            }
+
+        }
+
+
     }
 }

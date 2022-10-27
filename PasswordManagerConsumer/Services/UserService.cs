@@ -172,5 +172,23 @@ namespace PasswordManagerConsumer.Services
                 return "Ok";
             }
         }
+        public async Task<string> DeleteById(string id)
+        {
+            var token = await localStore.GetItemAsync<string>("token");
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"api/Manager/{id}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            Console.WriteLine(request.Content);
+            using var response = await client.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+
+                Console.WriteLine($"There was an error! {response.ReasonPhrase}");
+                return response.ReasonPhrase;
+            }
+            else
+            {
+                return "Ok";
+            }
+        }
     }
 }

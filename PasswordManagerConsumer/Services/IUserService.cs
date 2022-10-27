@@ -10,5 +10,6 @@ namespace PasswordManagerConsumer.Services
         Task<string> Register(UserRegisterDto user);
         Task<Employee> GetUserById(string id);
         Task<string> EditUser(Employee emp);
+        Task<string> DeleteById(string id);
     }
 }
