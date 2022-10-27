@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Manager.DAL.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -156,6 +156,18 @@ namespace Manager.DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Employees",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "b74ddd14-6340-4840-95c2-db12554843e5", 0, "87e88afe-b9c0-43d5-8b7e-2db7ca6e519f", "admin@gmail.com", false, "", "", false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEATTcoRvQSBRB41ayw1aC88Xgw0WqgvTGNRQL9kovpTGeUCo7HW7+zFkzq00zUarIA==", "1234567890", false, "59c5d8a0-48fb-4c52-bbdc-e97dacc4113f", false, "Admin" });
+            migrationBuilder.InsertData(
+              table: "AspNetUserClaims",
+              columns: new[] { "UserId", "ClaimType", "ClaimValue" },
+              values: new object[] { "b74ddd14-6340-4840-95c2-db12554843e5", "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", "b74ddd14-6340-4840-95c2-db12554843e5" });
+            migrationBuilder.InsertData(
+               table: "AspNetUserClaims",
+               columns: new[] { "UserId", "ClaimType", "ClaimValue" },
+               values: new object[] { "b74ddd14-6340-4840-95c2-db12554843e5", "http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "Admin" });
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
