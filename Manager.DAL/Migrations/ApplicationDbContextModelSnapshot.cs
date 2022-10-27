@@ -93,6 +93,26 @@ namespace Manager.DAL.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Employees", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "b74ddd14-6340-4840-95c2-db12554843e5",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "87e88afe-b9c0-43d5-8b7e-2db7ca6e519f",
+                            Email = "admin@gmail.com",
+                            EmailConfirmed = false,
+                            FirstName = "",
+                            LastName = "",
+                            LockoutEnabled = false,
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAEAACcQAAAAEATTcoRvQSBRB41ayw1aC88Xgw0WqgvTGNRQL9kovpTGeUCo7HW7+zFkzq00zUarIA==",
+                            PhoneNumber = "1234567890",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "59c5d8a0-48fb-4c52-bbdc-e97dacc4113f",
+                            TwoFactorEnabled = false,
+                            UserName = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
